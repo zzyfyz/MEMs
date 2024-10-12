@@ -1,4 +1,4 @@
-proc import datafile="C:\Users\feiy\OneDrive - The University of Colorado Denver\Desktop\ALEX\cox_unequal_ss_1.csv"
+proc import datafile="\yourfilepath"
         out=cox
         dbms=csv
         replace;
