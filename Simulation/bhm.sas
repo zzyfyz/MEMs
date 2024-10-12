@@ -1,4 +1,4 @@
-proc import datafile="\yourfilepath"
+proc import datafile="\yourfilepath\"
         out=cox
         dbms=csv
         replace;
@@ -33,7 +33,7 @@ proc mcmc data=cox seed=801 nbi=1000 nmc=9000 thin=5;
 run;
 %ODSOn
 
-proc export data=post outfile="C:\Users\feiy\OneDrive - The University of Colorado Denver\Desktop\ALEX\bhm_unequal_ss_1.csv"
+proc export data=post outfile="\yourfilepath\"
         dbms=csv
         replace;
 
