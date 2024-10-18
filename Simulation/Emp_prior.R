@@ -159,38 +159,6 @@ prior_post <- function(input,S,mod.mat,K,tau_p,cuttype){
     return( -1 * val )
   }
   
-  ## Gradient of h(theta_l) function
-  # See function "h.theta.l" for function input descriptions
-  h.p.theta.l <- function( x, S, mu.l, Sig.l, phi.0, eta.0, eta.tilde, phi.tilde.summand.list,
-                           dat.all.regs, W.l ){
-    
-    # Verify that x is saved as a (T_l + p) x 1 matrix
-    x <- cbind(x)
-    
-    # First piece
-    p1 <- -solve(Sig.l) %*% (x - mu.l)
-    
-    # Second piece
-    p2.i <- matrix(0, nrow = length(x), ncol = S)
-    for(i in 1:S){
-      reg.i <- sort( unique(dat.all.regs$cohort) )[i]
-      c.hat.i <- phi.tilde.summand.list[[i]]
-      W.il <- as.matrix( W.l[ which(dat.all.regs$cohort == reg.i), ] )
-      p2.i[,i] <- t( rowSums( t( as.numeric( colSums( as.numeric(exp(W.il %*% x)) * c.hat.i ) +
-                                               phi.0[i,] )^-1 * as.numeric(eta.tilde[i,]) *
-                                   t( t(W.il) %*% ( as.numeric(exp(W.il %*% x)) * c.hat.i ) ) ) ) )
-    }
-    p2 <- rowSums(p2.i)
-    
-    # Third piece
-    p3 <- colSums( W.l[ which(dat.all.regs$censor == 1), ] )
-    
-    # Gradient of h(gamma_l) function
-    grad <- p1 - p2 + p3
-    return(grad)
-    
-  }
-  
   
   ## Hessian of h(theta_l) function
   # See function "h.theta.l" for function input descriptions
