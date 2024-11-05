@@ -43,7 +43,7 @@ set.seed(123)
 # Define tau points and hazard ratios
 tau <- c(0, 1, 4.33, 26, 52)
 h1 <- 1
-h2 <- 1
+h2 <- 1.25
 h3 <- 1
 h4 <- 1
 
@@ -51,23 +51,24 @@ h4 <- 1
 sample_sizes <- seq(50, 500, by = 50)
 
 # Base directory
-base_dir <- "C:/Users/feiy/OneDrive - The University of Colorado Denver/Documents 1/MEMs/Simulation/Data/Unequal/1_1_1_1"
+base_dir <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Data/Equal/1_0.8_1_1"
 
 # Generate and save datasets for each sample size
-for (SS in sample_sizes) {
+for (i in 1:500) {
+  for (SS in sample_sizes) {
   # Define the output directory for the current sample size
   output_dir <- file.path(base_dir, as.character(SS))
   dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
   
   # Generate and save 500 datasets for the current sample size
-  for (i in 1:500) {
+  
     PC <- f(SS, SS, exp(-4.01), c(1, 1.01, 1.3, 1.6), c(1, h1), tau)
     PC$cohort <- 1
-    S1 <- f(SS/2, SS/2, exp(-4.01), c(1, 1.01, 1.3, 1.6), c(1, h2), tau)
+    S1 <- f(SS, SS, exp(-4.01), c(1, 1.01, 1.3, 1.6), c(1, h2), tau)
     S1$cohort <- 2
-    S2 <- f(SS/2, SS/2, exp(-4.01), c(1, 1.01, 1.3, 1.6), c(1, h3), tau)
+    S2 <- f(SS, SS, exp(-4.01), c(1, 1.01, 1.3, 1.6), c(1, h3), tau)
     S2$cohort <- 3
-    S3 <- f(SS/2, SS/2, exp(-4.01), c(1, 1.01, 1.3, 1.6), c(1, h4), tau)
+    S3 <- f(SS, SS, exp(-4.01), c(1, 1.01, 1.3, 1.6), c(1, h4), tau)
     S3$cohort <- 4
     
     # Combine cohorts into a list
