@@ -5,7 +5,7 @@ library(rstan)
 library(bridgesampling)
 
 
-as.matrix(load(list.files(pattern="dat_.")))
+as.matrix(load(list.files(pattern="dat_")))
 
 # Extract datasets
 PC <- dataset$PC
@@ -310,6 +310,8 @@ results_df <- data.frame(
 )
 
 text <- list.files(pattern="dat_")
-num <- unlist(lapply(strsplit(text,"_",fixed=TRUE),function(x) x[[2]]))
+num <- unlist(lapply(text, function(x) {
+  sub("dat_(\\d+)\\.RData", "\\1", x)
+}))
 write.csv(results_df, paste0("mcmc.result.",num,".csv"))
 
