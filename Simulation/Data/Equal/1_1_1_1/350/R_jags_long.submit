@@ -1,7 +1,7 @@
 +SingularityImage = "osdf:///ospool/ap40/data/jiayuan.shi/MEMs.sif"
 executable        = MCMC_uni.R
-arguments = dat_.$(Process).RData
-transfer_input_files = dat_.$(Process).RData
+arguments = dat_$(Process).RData
+transfer_input_files = dat_$(Process).RData
 transfer_output_files = mcmc.result.$(Process).csv
 
 log    = R.log.$(Cluster).$(Process)
