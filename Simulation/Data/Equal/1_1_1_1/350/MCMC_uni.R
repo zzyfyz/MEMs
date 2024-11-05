@@ -309,7 +309,7 @@ results_df <- data.frame(
   Posterior_UB = est_ub
 )
 
-text <- list.files(pattern="dat_.")
+text <- list.files(pattern="dat_")
 num <- unlist(lapply(strsplit(text,"_",fixed=TRUE),function(x) x[[2]]))
 write.csv(results_df, paste0("mcmc.result.",num,".csv"))
 
