@@ -4,7 +4,7 @@ library(rstan)
 library(bridgesampling)
 
 
-as.matrix(load("C:/Users/feiy/OneDrive - The University of Colorado Denver/Documents 1/MEMs/Simulation/Data/Equal/1_1_1_1/50/dat_3.RData"))
+as.matrix(load(list.files(pattern="dat_.")))
 
 # Extract datasets
 PC <- dataset$PC
