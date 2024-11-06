@@ -201,11 +201,11 @@ calculate_marginal_likelihood <- function(model_data, stan_model, C, K) {
   fit <- sampling(stan_model, data = stan_data, init = init_fn, iter = 1000, warmup = 500, chains = 4, refresh = 100, cores = 4)
   
   
-  # Calculate posterior mean values for theta and lambda
-  posterior_mean_theta <- summary(fit, pars = "theta")$summary[1, "mean"]
-  posterior_sd_theta <- summary(fit, pars = "theta")$summary[1, "sd"]
-  posterior_lb_theta <- summary(fit, pars = "theta")$summary[1, "2.5%"]
-  posterior_ub_theta <- summary(fit, pars = "theta")$summary[1, "97.5%"]
+  # Calculate posterior mean values for theta
+  posterior_mean_theta <- summary(fit, pars = "theta")$summary[, "mean"]
+  posterior_sd_theta <- summary(fit, pars = "theta")$summary[, "sd"]
+  posterior_lb_theta <- summary(fit, pars = "theta")$summary[, "2.5%"]
+  posterior_ub_theta <- summary(fit, pars = "theta")$summary[, "97.5%"]
   
 
   bridge_result <- bridge_sampler(fit)
@@ -275,8 +275,6 @@ results <- lapply(1:length(models), function(i) {
 # Extract theta and marginal likelihoods from results
 posterior_mean <- sapply(results, function(res) res$mean_theta)
 posterior_sd <- sapply(results, function(res) res$sd_theta)
-posterior_lb <- sapply(results, function(res) res$lb_theta)
-posterior_ub <- sapply(results, function(res) res$ub_theta)
 log_marginal_likelihoods <- sapply(results, function(res) res$log_marginal_likelihood)
 
 mod_prior <- rep(0.125 , 8)
@@ -286,27 +284,35 @@ ml_prop <- exp(log_marginal_likelihoods - max_log)
 pmp <- (ml_prop * mod_prior)/sum(ml_prop * mod_prior)
 
 est_theta <- sum(sapply(seq_along(posterior_mean), function(i) {
-  posterior_mean[[i]] * pmp[i]
+  posterior_mean[[i]][1] * pmp[i]
 }))
 
 est_sd <- sum(sapply(seq_along(posterior_sd), function(i) {
-  posterior_sd[[i]] * pmp[i]
+  posterior_sd[[i]][1] * pmp[i]
 }))
 
+# get the 95% credible interval
+n.samp <- 100000  # number of samples to draw
+cred.ints <- matrix(0, nrow = 1, ncol = 2)  
+colnames(cred.ints) <- c("LowBound", "UpBound")
 
-est_lb <- sum(sapply(seq_along(posterior_lb), function(i) {
-  posterior_lb[[i]] * pmp[i]
-}))
+# Sample from models based on pmp
+which.mods <- sample(seq_along(posterior_mean), n.samp, replace = TRUE, prob = pmp)
 
-est_ub <- sum(sapply(seq_along(posterior_ub), function(i) {
-  posterior_ub[[i]] * pmp[i]
-}))
+# Generate samples for global effect
+glob.samp <- rnorm(n.samp, mean = sapply(which.mods, function(i) posterior_mean[[i]][1]), 
+                   sd = sapply(which.mods, function(i) posterior_sd[[i]][1]))
+
+# Compute 95% credible interval
+cred.ints[1, ] <- quantile(glob.samp, c(0.025, 0.975))
+
 
 results_df <- data.frame(
+  Dataset_ID = dataset_id,
   Posterior_Mean = est_theta,
   Posterior_SD = est_sd,
-  Posterior_LB = est_lb,
-  Posterior_UB = est_ub
+  Posterior_LB = cred.ints[1, 1],
+  Posterior_UB = cred.ints[1, 2]
 )
 
 text <- list.files(pattern="dat_")
