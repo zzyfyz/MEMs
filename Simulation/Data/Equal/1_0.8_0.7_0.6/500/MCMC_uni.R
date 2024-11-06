@@ -73,8 +73,9 @@ model {
 "
 
 # Function to calculate marginal likelihood for each model
-calculate_marginal_likelihood <- function(model_data, stan_model, C, K) {
+calculate_marginal_likelihood <- function(model_data, stan_model, C, K, gamma0) {
   # Prepare data for Stan model
+  gamma0 <- gamma0
   N <- nrow(model_data)      # Number of observations
   K <- K                        # Number of intervals
   C <- length(unique(model_data$cohort)) # Number of cohorts in this model
@@ -207,7 +208,11 @@ calculate_marginal_likelihood <- function(model_data, stan_model, C, K) {
   posterior_lb_theta <- summary(fit, pars = "theta")$summary[, "2.5%"]
   posterior_ub_theta <- summary(fit, pars = "theta")$summary[, "97.5%"]
   
-
+  posterior_samples <- extract(fit, pars = "theta")$theta
+  posterior_samples_pc <- posterior_samples[, 1, 1]
+  prob_less_gamma0 <- mean(posterior_samples_pc < gamma0)
+  
+  
   bridge_result <- bridge_sampler(fit)
   log_marginal_likelihood <- bridge_result$logml
   
@@ -216,7 +221,9 @@ calculate_marginal_likelihood <- function(model_data, stan_model, C, K) {
     sd_theta = posterior_sd_theta,
     lb_theta = posterior_lb_theta,
     ub_theta = posterior_ub_theta,
-    log_marginal_likelihood = log_marginal_likelihood
+    log_marginal_likelihood = log_marginal_likelihood,
+    samples = posterior_samples_pc,
+    prob_less_gamma0 = prob_less_gamma0
   ))
 }
 
@@ -269,13 +276,16 @@ results <- lapply(1:length(models), function(i) {
   model_data <- combined_datasets[[paste0("Model_", i)]]
   C <- length(unique(model_data$cohort))
   K <- 4  # Number of intervals
-  calculate_marginal_likelihood(model_data, stan_model, C, K)
+  gamma0 <- 0
+  calculate_marginal_likelihood(model_data, stan_model, C, K, gamma0)
 })
 
 # Extract theta and marginal likelihoods from results
 posterior_mean <- sapply(results, function(res) res$mean_theta)
 posterior_sd <- sapply(results, function(res) res$sd_theta)
 log_marginal_likelihoods <- sapply(results, function(res) res$log_marginal_likelihood)
+prob_less_gamma0s <- sapply(results, function(res) res$prob_less_gamma0)
+post_sample <- sapply(results, function(res) res$samples)
 
 mod_prior <- rep(0.125 , 8)
 # Calculate posterior model weights
@@ -291,6 +301,10 @@ est_sd <- sum(sapply(seq_along(posterior_sd), function(i) {
   posterior_sd[[i]][1] * pmp[i]
 }))
 
+prob <- sum(sapply(seq_along(prob_less_gamma0s), function(i) {
+  prob_less_gamma0s[[i]] * pmp[i]
+}))
+
 # get the 95% credible interval
 n.samp <- 100000  # number of samples to draw
 cred.ints <- matrix(0, nrow = 1, ncol = 2)  
@@ -300,8 +314,9 @@ colnames(cred.ints) <- c("LowBound", "UpBound")
 which.mods <- sample(seq_along(posterior_mean), n.samp, replace = TRUE, prob = pmp)
 
 # Generate samples for global effect
-glob.samp <- rnorm(n.samp, mean = sapply(which.mods, function(i) posterior_mean[[i]][1]), 
-                   sd = sapply(which.mods, function(i) posterior_sd[[i]][1]))
+glob.samp <- sapply(1:n.samp, function(i) {
+  sample(post_sample[, which.mods[i]], 1)
+})
 
 # Compute 95% credible interval
 cred.ints[1, ] <- quantile(glob.samp, c(0.025, 0.975))
@@ -311,12 +326,13 @@ results_df <- data.frame(
   Posterior_Mean = est_theta,
   Posterior_SD = est_sd,
   Posterior_LB = cred.ints[1, 1],
-  Posterior_UB = cred.ints[1, 2]
+  Posterior_UB = cred.ints[1, 2],
+  prob = prob
 )
 
 text <- list.files(pattern="dat_")
 num <- unlist(lapply(text, function(x) {
   sub("dat_(\\d+)\\.RData", "\\1", x)
 }))
-write.csv(results_df, paste0("mcmc.result.",num,".csv"))
+write.csv(results_df, paste0("mcmc.result.",num,".csv"), row.names=FALSE)
 
