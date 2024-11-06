@@ -308,7 +308,6 @@ cred.ints[1, ] <- quantile(glob.samp, c(0.025, 0.975))
 
 
 results_df <- data.frame(
-  Dataset_ID = dataset_id,
   Posterior_Mean = est_theta,
   Posterior_SD = est_sd,
   Posterior_LB = cred.ints[1, 1],
