@@ -525,18 +525,19 @@ for (i in 1:nsim) {
       ## Sample size
       ss <- rbind(pmp.vec) %*% n.l.mat
       #ss
+      cred.ints <- matrix(0, nrow = S, ncol = 2)
       
       for(i in 1:S){
       # get the 95% credible interval
       n.samp <- 100000  # number of samples to draw
-      cred.ints <- matrix(0, nrow = S, ncol = 2)  
+  
       colnames(cred.ints) <- c("LowBound", "UpBound")
       
       # Sample from models based on pmp
-      which.mods <- sample(1:num_models, n.samp, replace = TRUE, prob = pmp.vec)
+      which.mods <- sample(1:L, n.samp, replace = TRUE, prob = pmp.vec)
       
       # Generate samples for global effect
-      glob.samp <- rnorm(n.samp, rte.means[which.mods.reg, i], rte.sds[which.mods.reg, i])
+      glob.samp <- rnorm(n.samp, rte.mean.l.mat[which.mods, i], rte.sd.l.mat[which.mods, i])
       
       # Compute 95% credible interval
       cred.ints[i,] <- quantile(glob.samp, c(.025, .975))
