@@ -5,13 +5,18 @@ results <- data.frame(N=integer(), Mean=numeric(), Sd=numeric(),
                       Prob=numeric(), bias=numeric(), mse=numeric(),
                       lcl=numeric(), ucl=numeric(), model = character())
 
+te <- 0 
+
 # Loop through each sample size folder
-for (N in 500) {
+for (N in 50) {
   folder_path <- paste0("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/MCMC/1_0.8_0.7_0.6/", N)
   
   # Initialize storage for 500 estimates
   posterior_means <- numeric(500)
   posterior_sds <- numeric(500)
+  diff <- numeric(500)
+  diff_sq <-  numeric(500)
+  reject <- numeric(500)
   lb_coverage <- logical(500)
   ub_coverage <- logical(500)
   
@@ -27,24 +32,26 @@ for (N in 500) {
     # Check if 0 is within the posterior interval
     lb_coverage[i] <- data$Posterior_LB <= 0
     ub_coverage[i] <- data$Posterior_UB >= 0
+    
+    diff[i] <- data$Posterior_Mean - te
+    
+    diff_sq[i] <- (data$Posterior_Mean - te)^2
+    
+    reject[i] <- ifelse(data$prob > 0.975,1,0)
   }
   
   # Calculate required metrics
   mean_estimate <- mean(posterior_means)
-  sd_estimate <- sqrt(mean(posterior_sds^2))
-  bias <- mean_estimate - 0
-  mse <- bias^2 + sd_estimate^2
+  bias <- mean(diff)
+  mse <- mean(diff_sq)
+  rej_rate <- mean(reject)
   coverage_probability <- mean(lb_coverage & ub_coverage)
   
-  # Calculate 95% credible interval for the mean of posterior means
-  ci_lower <- quantile(posterior_means, 0.025)
-  ci_upper <- quantile(posterior_means, 0.975)
   
   # Combine results
-  results <- rbind(results, data.frame(N=N, Mean=mean_estimate, Sd=sd_estimate,
-                                       Prob=coverage_probability, bias=bias,
-                                       mse=mse, lcl=ci_lower, ucl=ci_upper, model="MCMC-Uniform"))
+  results <- rbind(results, data.frame(N=N, Mean=mean_estimate, bias=bias,
+                                       mse=mse, prob = rej_rate, cover = coverage_probability, model="MCMC-Uniform"))
 }
 
 # Save the results to a CSV file
-write.csv(results, "summary_results.csv", row.names=FALSE)
+write.csv(results, "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/MCMC/1_0.8_0.7_0.6/sum_result_50.csv", row.names=FALSE)

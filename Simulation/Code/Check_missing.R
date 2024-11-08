@@ -1,6 +1,5 @@
 # Set the directory where the files are located
-file_directory <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/MCMC/1_1_1_1/250"  # Replace with the actual path
-
+file_directory <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/MCMC/1_0.8_0.7_0.6/100"
 # Generate the expected file names with ".csv" extension
 expected_files <- paste0("mcmc.result.", 1:500, ".csv")
 
