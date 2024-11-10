@@ -9,7 +9,7 @@ set.seed(123)
 nsim <- 500
 
 xind <- seq(50, 500, by = 50) # Assuming sample_sizes is defined and contains sample sizes
-base_dir <- "C:/Users/feiy/OneDrive - The University of Colorado Denver/Documents 1/MEMs/Simulation/Data/Equal/1_1_1_1"
+base_dir <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Data/Equal/0.8_0.7_0.6_0.5"
 pb <- txtProgressBar(0, nsim, style = 3)
 
 # Initialize result arrays
@@ -24,10 +24,6 @@ result_effm <- array(NA_real_, dim = c(nsim, 4, length(xind)),
 
 result_effsd <- array(NA_real_, dim = c(nsim, 4, length(xind)),
                       dimnames = list("simulation" = 1:nsim, "cohort" = 1:4, "N" = xind))
-
-result_cred_ints <- array(NA_real_, dim = c(nsim, 4, 2, length(xind)),
-                          dimnames = list("simulation" = 1:nsim, "cohort" = 1:4, 
-                                          "CI" = c("LowBound", "UpBound"), "N" = xind))
 
 result_prob <- array(NA_real_, dim = c(nsim, 4, length(xind)),
                      dimnames = list("simulation" = 1:nsim, "cohort" = 1:4, "N" = xind))
@@ -936,25 +932,7 @@ for (i in 1:nsim) {
       ## Sample size
       ss <- rbind(pmp.vec) %*% n.l.mat
       #ss
-      cred.ints <- matrix(0, nrow = S, ncol = 2)  
-      
-      for(i in 1:S){
-        # get the 95% credible interval
-        n.samp <- 100000  # number of samples to draw
-
-        colnames(cred.ints) <- c("LowBound", "UpBound")
-        
-        # Sample from models based on pmp
-        which.mods <- sample(1:num_models, n.samp, replace = TRUE, prob = pmp.vec)
-        
-        # Generate samples for global effect
-        glob.samp <- rnorm(n.samp, rte.mean.l.mat[which.mods, i], rte.sd.l.mat[which.mods, i])
-        
-        # Compute 95% credible interval
-        cred.ints[i,] <- quantile(glob.samp, c(.025, .975))
-      }
-      
-      my_list<- list("pmp"=pmp.vec,"mean"=rte.means,"sd"=rte.sds, "CI"=cred.ints, "ss"=ss,"test"=rte.less.gamma0,"mod_prior"=mod.priors)
+      my_list<- list("pmp"=pmp.vec,"mean"=rte.means,"sd"=rte.sds,"ss"=ss,"test"=rte.less.gamma0,"mod_prior"=mod.priors)
       return(my_list)
     }
     
@@ -988,10 +966,6 @@ for (i in 1:nsim) {
     result_prob[i,3,j] <- mod$test[3]
     result_prob[i,4,j] <- mod$test[4]
     
-    result_cred_ints[i, 1, , j] <- mod$CI[1, ]
-    result_cred_ints[i, 2, , j] <- mod$CI[2, ]
-    result_cred_ints[i, 3, , j] <- mod$CI[3, ]
-    result_cred_ints[i, 4, , j] <- mod$CI[4, ]
     
   }
   
@@ -1005,16 +979,11 @@ effm <- as.data.frame.table(result_effm, responseName = "Mean", stringsAsFactors
 effsd <- as.data.frame.table(result_effsd, responseName = "Sd", stringsAsFactors = F) 
 prob <- as.data.frame.table(result_prob, responseName = "Prob", stringsAsFactors = F) 
 prob$ind <- ifelse(prob$Prob > 0.95, 1, 0)
-cred_ints <- as.data.frame.table(result_cred_ints, responseName = "CI_value", stringsAsFactors = FALSE)
-cred_ints <- reshape(cred_ints, idvar = c("simulation", "cohort", "N"), timevar = "CI", direction = "wide")
 
-output_dir <- "C:/Users/feiy/OneDrive - The University of Colorado Denver/Documents 1/MEMs/Simulation/Results/Equal/Laplace/Empirical/1_1_1_1"
+output_dir <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Empirical/0.8_0.7_0.6_0.5"
 write.csv(pmp, file.path(output_dir, "pmp_results.csv"), row.names = FALSE)
 write.csv(ss, file.path(output_dir, "ss_results.csv"), row.names = FALSE)
 write.csv(effm, file.path(output_dir, "effm_results.csv"), row.names = FALSE)
 write.csv(effsd, file.path(output_dir, "effsd_results.csv"), row.names = FALSE)
 write.csv(prob, file.path(output_dir, "prob_results.csv"), row.names = FALSE)
-write.csv(cred_ints, file.path(output_dir, "cred_ints_results.csv"), row.names = FALSE)
-
-
 

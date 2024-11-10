@@ -9,7 +9,7 @@ set.seed(123)
 nsim <- 500
 
 xind <- seq(50, 500, by = 50) # Assuming sample_sizes is defined and contains sample sizes
-base_dir <- "C:/Users/feiy/OneDrive - The University of Colorado Denver/Documents 1/MEMs/Simulation/Data/Equal/1_1_1_1"
+base_dir <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Data/Equal/1_0.8_0.7_0.6"
 pb <- txtProgressBar(0, nsim, style = 3)
 
 # Initialize result arrays
@@ -392,7 +392,8 @@ for (i in 1:nsim) {
                                      phi.tilde.summand.list, dat.all.regs, W.l )
         
         # Approximated log of marginal likelihood
-        log.val <- .5 * length(theta.mode) * log(2*pi) + .5 * log(det(psi.mat)) + log.post.theta
+        log.val <- .5 * length(theta.mode) * log(2*pi) + .5 * log(det(psi.mat)) + log.post.theta -
+          .5*length(theta.mode)*log(2*pi) - .5*log(det(Sig.l)) - .5*t(theta.mode - mu.l) %*% solve(Sig.l) %*% (theta.mode - mu.l)
         return(log.val)
         
       }
@@ -592,11 +593,11 @@ ss <- as.data.frame.table(result_ss, responseName = "N", stringsAsFactors = F)
 effm <- as.data.frame.table(result_effm, responseName = "Mean", stringsAsFactors = F)
 effsd <- as.data.frame.table(result_effsd, responseName = "Sd", stringsAsFactors = F) 
 prob <- as.data.frame.table(result_prob, responseName = "Prob", stringsAsFactors = F) 
-prob$ind <- ifelse(prob$Prob > 0.95, 1, 0)
+prob$ind <- ifelse(prob$Prob > 0.975, 1, 0)
 cred_ints <- as.data.frame.table(result_cred_ints, responseName = "CI_value", stringsAsFactors = FALSE)
 cred_ints <- reshape(cred_ints, idvar = c("simulation", "cohort", "N"), timevar = "CI", direction = "wide")
 
-output_dir <- "C:/Users/feiy/OneDrive - The University of Colorado Denver/Documents 1/MEMs/Simulation/Results/Equal/Laplace/Uniform/1_1_1_1"
+output_dir <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Uniform/0.8_0.7_0.6_0.5"
 write.csv(pmp, file.path(output_dir, "pmp_results.csv"), row.names = FALSE)
 write.csv(ss, file.path(output_dir, "ss_results.csv"), row.names = FALSE)
 write.csv(effm, file.path(output_dir, "effm_results.csv"), row.names = FALSE)
@@ -604,4 +605,19 @@ write.csv(effsd, file.path(output_dir, "effsd_results.csv"), row.names = FALSE)
 write.csv(prob, file.path(output_dir, "prob_results.csv"), row.names = FALSE)
 write.csv(cred_ints, file.path(output_dir, "cred_ints_results.csv"), row.names = FALSE)
 
+effm_1 <- effm %>%
+  group_by(cohort, N) %>%
+  summarize(Mean = mean(Mean), .groups = "drop") %>%
+  filter(cohort == 1)  
+effm_1$prior <- 'Laplace-Uniform'
+
+effsd_1 <- effsd %>% group_by(cohort, N) %>%
+  summarize(Sd=mean(Sd), .groups = "drop") %>%
+  filter(cohort == 1)  
+effsd_1$prior <- 'Laplace-Uniform'
+
+prob_1 <- prob %>% group_by(cohort,N)%>% group_by(cohort, N) %>%
+  summarize(Prob=mean(ind), .groups = "drop") %>%
+  filter(cohort == 1)  
+prob_1$prior <- 'Laplace-Uniform'
 

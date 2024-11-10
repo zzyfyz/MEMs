@@ -8,8 +8,8 @@ results <- data.frame(N=integer(), Mean=numeric(), Sd=numeric(),
 te <- 0 
 
 # Loop through each sample size folder
-for (N in 50) {
-  folder_path <- paste0("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/MCMC/1_0.8_0.7_0.6/", N)
+for (N in sample_sizes) {
+  folder_path <- paste0("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/MCMC/1_0.8_0.7_1/", N)
   
   # Initialize storage for 500 estimates
   posterior_means <- numeric(500)
@@ -54,4 +54,4 @@ for (N in 50) {
 }
 
 # Save the results to a CSV file
-write.csv(results, "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/MCMC/1_0.8_0.7_0.6/sum_result_50.csv", row.names=FALSE)
+write.csv(results, "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/MCMC/1_0.8_0.7_1/mcmc_sum_1_0.8_0.7_1.csv", row.names=FALSE)
