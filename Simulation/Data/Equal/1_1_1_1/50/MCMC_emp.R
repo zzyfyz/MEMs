@@ -281,6 +281,11 @@ post_sample <- sapply(results, function(res) res$samples)
 
 ## get empirical prior
 
+prior_models <- list(
+  c(1, 1),
+  c(1, 2)
+)
+
 # Apply the function to each model to get theta and marginal likelihoods
 prior_1 <- lapply(1:length(prior_models), function(i) {
   model_data <- combined_datasets[[paste0("Model_", i)]]

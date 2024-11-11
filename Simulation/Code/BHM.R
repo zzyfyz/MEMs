@@ -39,7 +39,7 @@ model {
   }
   
   // Prior distributions
-  mu ~ normal(0, 10);
+  mu ~ normal(0, 4);
   tau2 ~ inv_gamma(0.001, 0.001);  
   for (i in 1:cohort) {
     mui[i] ~ normal(mu, sqrt(tau2));
@@ -147,3 +147,5 @@ summary_results <- results %>%
     cover = mean((posterior_lb_theta <= 0 & posterior_ub_theta >= 0), na.rm = TRUE),
     model = "BHM"
   )
+
+write.csv(summary_results, "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/BHM/1_0.8_0.7_1/bhm_1_0.8_0.7_1.csv", row.names = FALSE)
