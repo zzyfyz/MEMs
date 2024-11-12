@@ -1,0 +1,17 @@
++SingularityImage = "osdf:///ospool/ap40/data/jiayuan.shi/MEMs.sif"
+executable        = MCMC_emp.R
+arguments = dat_$(Process).RData
+transfer_input_files = dat_$(Process).RData
+transfer_output_files = mcmc.result.$(Process).csv
+
+log    = R.log.$(Cluster).$(Process)
+error  = R.err.$(Cluster).$(Process)
+output = R.out.$(Cluster).$(Process)
+
++JobDurationCategory = "Medium"
+
+request_cpus   = 4
+request_memory = 12GB
+request_disk   = 12GB
+
+queue 500
