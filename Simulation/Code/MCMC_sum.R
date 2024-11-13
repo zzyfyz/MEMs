@@ -9,7 +9,7 @@ te <- 0
 
 # Loop through each sample size folder
 for (N in sample_sizes) {
-  folder_path <- paste0("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/MCMC/1_1_1_1/", N)
+  folder_path <- paste0("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/MCMC_emp/1_0.8_0.7_0.6/", N)
   
   # Initialize storage for 500 estimates
   posterior_means <- numeric(500)
@@ -50,8 +50,8 @@ for (N in sample_sizes) {
   
   # Combine results
   results <- rbind(results, data.frame(N=N, Mean=mean_estimate, bias=bias,
-                                       mse=mse, prob = rej_rate, cover = coverage_probability, model="MCMC-Uniform"))
+                                       mse=mse, prob = rej_rate, cover = coverage_probability, model="MCMC-Empirical"))
 }
 
 # Save the results to a CSV file
-write.csv(results, "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/MCMC/1_1_1_1/mcmc_sum_1_1_1_1.csv", row.names=FALSE)
+write.csv(results, "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/MCMC_emp/1_0.8_0.7_0.6/mcmc_emp_1_0.8_0.7_0.6.csv", row.names=FALSE)

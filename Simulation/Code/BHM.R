@@ -101,12 +101,12 @@ for (i in 1:nsim) {
     stan_data <- list(
       cohort = nrow(dat_BHM),           # Number of cohorts/regions
       y = dat_BHM$mean,                     # Means from each cohort
-      s2i = dat_BHM$sd                    # Variances (sd^2) for each cohort
+      s2i = sqrt(dat_BHM$sd)                    # Variances (sd^2) for each cohort
     )
     
     
     # Compile the model
-    fit <- sampling(stan_model, data = stan_data, iter = 1000, warmup = 500, chains = 4, cores=4)
+    fit <- sampling(stan_model, data = stan_data, iter = 2000, warmup = 500, chains = 4, cores=4)
     
     
     # Calculate posterior mean values for theta

@@ -1,6 +1,6 @@
 
 # Define the folder names corresponding to the sample sizes
-sample_sizes <- seq(50, 450, by=50)
+sample_sizes <- seq(50, 500, by=50)
 results <- data.frame(N=integer(), Mean=numeric(), Sd=numeric(),
                       Prob=numeric(), bias=numeric(), mse=numeric(),
                       lcl=numeric(), ucl=numeric(), model = character())
@@ -9,7 +9,7 @@ te <- log(0.8)
 
 # Loop through each sample size folder
 for (N in sample_sizes) {
-  folder_path <- paste0("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/MCMC/0.8_0.7_0.6_0.8/", N)
+  folder_path <- paste0("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/MCMC_emp/0.8_0.8_0.8_0.8/", N)
   
   # Initialize storage for 500 estimates
   posterior_means <- numeric(500)
@@ -50,8 +50,8 @@ for (N in sample_sizes) {
   
   # Combine results
   results <- rbind(results, data.frame(N=N, Mean=mean_estimate, bias=bias,
-                                       mse=mse, prob = rej_rate, cover = coverage_probability, model="MCMC-Uniform"))
+                                       mse=mse, prob = rej_rate, cover = coverage_probability, model="MCMC-Empirical"))
 }
 
 # Save the results to a CSV file
-write.csv(results, "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/MCMC/0.8_0.8_0.8_0.8/mcmc_sum_0.8_0.8_0.8_0.8.csv", row.names=FALSE)
+write.csv(results, "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/MCMC_emp/0.8_0.8_0.8_0.8/mcmc_emp_0.8_0.8_0.8_0.8.csv", row.names=FALSE)

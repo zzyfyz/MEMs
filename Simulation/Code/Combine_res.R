@@ -1,7 +1,10 @@
+library(tidyr)
+library(dplyr)
+
 ##################
 ## Cox
 ##################
-library(dplyr)
+
 
 file_path <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Cox/1_1_1_1/"
 
@@ -65,52 +68,115 @@ write.csv(results, file.path(file_path, "cox_null.csv"), row.names = FALSE)
 ## laplace uniform
 ##################
 
-lp_u_mu <- read.csv("C:/Users/feiy/OneDrive - The University of Colorado Denver/Documents 1/MEMs/Simulation/Results/Equal/Laplace/Uniform/1_1_1_1/effm_results.csv")
-lp_u_sd <- read.csv("C:/Users/feiy/OneDrive - The University of Colorado Denver/Documents 1/MEMs/Simulation/Results/Equal/Laplace/Uniform/1_1_1_1/effsd_results.csv")
-lp_u_prob<- read.csv("C:/Users/feiy/OneDrive - The University of Colorado Denver/Documents 1/MEMs/Simulation/Results/Equal/Laplace/Uniform/1_1_1_1/prob_results.csv")
+lp_u_mu <- read.csv("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Uniform/1_0.8_0.7_0.6/effm_results.csv")
+lp_u_ci <- read.csv("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Uniform/1_0.8_0.7_0.6/cred_ints_results.csv")
+lp_u_prob<- read.csv("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Uniform/1_0.8_0.7_0.6/prob_results.csv")
 
+# Define the true mean for calculating bias and mse
+true_mean <- 0  # Replace with the true mean value if known
+
+# Process mean data
+# Process mean data to calculate bias and MSE
 effm_1 <- lp_u_mu %>%
-  group_by(cohort, N) %>%
-  summarize(Mean = mean(Mean), .groups = "drop") %>%
-  filter(cohort == 1)  
+  filter(cohort == 1) %>%
+  group_by(N) %>%
+  summarize(
+    Mean = mean(Mean),
+    bias = mean(Mean - true_mean),
+    mse = mean((Mean - true_mean)^2),
+    .groups = "drop"
+  )
 effm_1$prior <- 'Laplace-Uniform'
 
-effsd_1 <- lp_u_sd %>% group_by(cohort, N) %>%
-  summarize(Sd=mean(Sd), .groups = "drop") %>%
-  filter(cohort == 1)  
-effsd_1$prior <- 'Laplace-Uniform'
+# Process credible intervals to calculate 95% coverage
+effci_1 <- lp_u_ci %>%
+  filter(cohort == 1) %>%
+  group_by(N) %>%
+  summarize(
+    cover = mean(true_mean >= CI_value.LowBound & true_mean <= CI_value.UpBound),
+    .groups = "drop"
+  )
+effci_1$prior <- 'Laplace-Uniform'
 
-prob_1 <- lp_u_prob %>% group_by(cohort,N)%>% group_by(cohort, N) %>%
-  summarize(Prob=mean(ind), .groups = "drop") %>%
-  filter(cohort == 1)  
+# Process probability data
+prob_1 <- lp_u_prob %>%
+  filter(cohort == 1) %>%
+  group_by(N) %>%
+  summarize(
+    prob = mean(ind > 0.975),
+    .groups = "drop"
+  )
 prob_1$prior <- 'Laplace-Uniform'
+
+# Combine all results into a final output
+final_output <- effm_1 %>%
+  left_join(effci_1 %>% select(N, cover), by = "N") %>%
+  left_join(prob_1 %>% select(N, Prob), by = "N") %>%
+  select(N, Mean, bias, mse, Prob, cover)
+
+final_output$model <- "Laplace-Uniform"
+
+# Write to CSV
+write.csv(final_output, "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Results for Combine/laplace_uni_1_0.8_0.7_0.6.csv", row.names = FALSE)
 
 ####################
 ## laplace empirical
 ####################
 
-lp_e_mu <- read.csv("C:/Users/feiy/OneDrive - The University of Colorado Denver/Documents 1/MEMs/Simulation/Results/Equal/Laplace/Empirical/1_1_1_1/effm_results.csv")
-lp_e_sd <- read.csv("C:/Users/feiy/OneDrive - The University of Colorado Denver/Documents 1/MEMs/Simulation/Results/Equal/Laplace/Empirical/1_1_1_1/effsd_results.csv")
-lp_e_prob<- read.csv("C:/Users/feiy/OneDrive - The University of Colorado Denver/Documents 1/MEMs/Simulation/Results/Equal/Laplace/Empirical/1_1_1_1/prob_results.csv")
+lp_e_mu <- read.csv("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Empirical/1_0.8_0.7_0.6/effm_results.csv")
+lp_e_ci <- read.csv("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Empirical/1_0.8_0.7_0.6/cred_ints_results.csv")
+lp_e_prob<- read.csv("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Empirical/1_0.8_0.7_0.6/prob_results.csv")
 
-effm_2 <- lp_e_mu %>%
-  group_by(cohort, N) %>%
-  summarize(Mean = mean(Mean), .groups = "drop") %>%
-  filter(cohort == 1)  
-effm_2$prior <- 'Laplace-Empirical'
+# Define the true mean for calculating bias and mse
+true_mean <- 0  # Replace with the true mean value if known
 
-effsd_2 <- lp_e_sd %>% group_by(cohort, N) %>%
-  summarize(Sd=mean(Sd), .groups = "drop") %>%
-  filter(cohort == 1)  
-effsd_2$prior <- 'Laplace-Empirical'
+# Process mean data
+# Process mean data to calculate bias and MSE
+effm_1 <- lp_e_mu %>%
+  filter(cohort == 1) %>%
+  group_by(N) %>%
+  summarize(
+    Mean = mean(Mean),
+    bias = mean(Mean - true_mean),
+    mse = mean((Mean - true_mean)^2),
+    .groups = "drop"
+  )
+effm_1$prior <- 'Laplace-Empirical'
 
-prob_2 <- lp_e_prob %>% group_by(cohort,N)%>% group_by(cohort, N) %>%
-  summarize(Prob=mean(ind), .groups = "drop") %>%
-  filter(cohort == 1)  
-prob_2$prior <- 'Laplace-Empirical'
+# Process credible intervals to calculate 95% coverage
+effci_1 <- lp_e_ci %>%
+  filter(cohort == 1) %>%
+  group_by(N) %>%
+  summarize(
+    cover = mean(true_mean >= CI_value.LowBound & true_mean <= CI_value.UpBound),
+    .groups = "drop"
+  )
+effci_1$prior <- 'Laplace-Empirical'
 
-####################
-## BHM
-####################
+# Process probability data
+prob_1 <- lp_e_prob %>%
+  filter(cohort == 1) %>%
+  group_by(N) %>%
+  summarize(
+    prob = mean(ind > 0.975),
+    .groups = "drop"
+  )
+prob_1$prior <- 'Laplace-Empirical'
+
+# Combine all results into a final output
+final_output <- effm_1 %>%
+  left_join(effci_1 %>% select(N, cover), by = "N") %>%
+  left_join(prob_1 %>% select(N, Prob), by = "N") %>%
+  select(N, Mean, bias, mse, Prob, cover)
+
+final_output$model <- "Laplace-Empirical"
+
+# Write to CSV
+write.csv(final_output, "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Results for Combine/laplace_emp_1_0.8_0.7_0.6.csv", row.names = FALSE)
+
+#############
+##PLot
+#############
+
 
 
