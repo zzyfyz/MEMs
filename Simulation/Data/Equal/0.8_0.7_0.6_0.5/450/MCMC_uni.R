@@ -199,7 +199,7 @@ calculate_marginal_likelihood <- function(model_data, stan_model, C, K, gamma0) 
   }
   
   # Run the model with example data
-  fit <- sampling(stan_model, data = stan_data, init = init_fn, iter = 1000, warmup = 500, chains = 4, refresh = 100, cores = 4)
+  fit <- sampling(stan_model, data = stan_data, init = init_fn, iter = 2000, warmup = 500, chains = 4, refresh = 100, cores = 4)
   
   
   # Calculate posterior mean values for theta
