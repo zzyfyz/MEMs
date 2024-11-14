@@ -11,7 +11,7 @@ set.seed(123)
 nsim <- 500
 gamma0 <- 0
 xind <- seq(50, 500, by = 50) # Assuming sample_sizes is defined and contains sample sizes
-base_dir <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Data/Equal/1_0.8_0.7_1"
+base_dir <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Data/Equal/0.8_0.7_0.6_0.5"
 pb <- txtProgressBar(0, nsim, style = 3)
 
 results_list <- vector("list", length = nsim * length(xind))
@@ -141,11 +141,11 @@ summary_results <- results %>%
   group_by(N) %>%
   summarize(
     Mean = mean(posterior_mean_theta, na.rm = TRUE),
-    bias = mean(posterior_mean_theta - 0, na.rm = TRUE),
-    mse = mean((posterior_mean_theta - 0)^2, na.rm = TRUE),
+    bias = mean(posterior_mean_theta - log(0.8), na.rm = TRUE),
+    mse = mean((posterior_mean_theta - log(0.8))^2, na.rm = TRUE),
     prob = mean(ifelse(prob_less_gamma0 > 0.975, 1, 0), na.rm = TRUE),
-    cover = mean((posterior_lb_theta <= 0 & posterior_ub_theta >= 0), na.rm = TRUE),
+    cover = mean((posterior_lb_theta <= log(0.8) & posterior_ub_theta >= log(0.8)), na.rm = TRUE),
     model = "BHM"
   )
 
-write.csv(summary_results, "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/BHM/1_0.8_0.7_1/bhm_1_0.8_0.7_1.csv", row.names = FALSE)
+write.csv(summary_results, "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/BHM/0.8_0.7_0.6_0.5/bhm_0.8_0.7_0.6_0.5.csv", row.names = FALSE)
