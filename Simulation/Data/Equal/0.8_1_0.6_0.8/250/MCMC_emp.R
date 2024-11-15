@@ -190,7 +190,7 @@ calculate_marginal_likelihood <- function(model_data, stan_model, C, K, gamma0) 
   }
   
   # Run the model with example data
-  fit <- sampling(stan_model, data = stan_data, init = init_fn, iter = 1000, warmup = 500, chains = 4, refresh = 100, cores = 4)
+  fit <- sampling(stan_model, data = stan_data, init = init_fn, iter = 2000, warmup = 500, chains = 4, refresh = 100, cores = 4)
   
   
   # Calculate posterior mean values for theta
@@ -279,58 +279,36 @@ prob_less_gamma0s <- sapply(results, function(res) res$prob_less_gamma0)
 post_sample <- sapply(results, function(res) res$samples)
 
 
-## get empirical prior
+# Define constraint for optimal source
+constraint <- 0.67
 
-prior_models <- list(
-  c(1, 1),
-  c(1, 2)
-)
+# Identify the optimal model(s) based on log marginal likelihoods
+max_logml <- max(log_marginal_likelihoods)
+optimal_indices <- which(log_marginal_likelihoods == max_logml)
 
-# Apply the function to each model to get theta and marginal likelihoods
-prior_1 <- lapply(1:length(prior_models), function(i) {
-  model_data <- combined_datasets[[paste0("Model_", i)]]
-  C <- length(unique(model_data$cohort))
-  K <- 4  # Number of intervals
-  gamma0 <- 0
-  calculate_marginal_likelihood(model_data, stan_model, C, K, gamma0)
-})
+# Initialize a vector to store exchangeability probabilities for each supplemental cohort
+num_supp_cohorts <- length(models[[1]]) - 1  # Exclude primary cohort
+prior_weights <- rep(0, num_supp_cohorts)    # Start with zero probabilities
 
-##Empirical Prior
-exchangeability_probs <- sapply(2:4, function(i) {
-  model_11 <- combine_datasets(c(1, 1), dataset = list(PC, dataset[[i]]))
-  model_12 <- combine_datasets(c(1, 2), dataset = list(PC, dataset[[i]]))
-  
-  C1 <- length(unique(model_11$cohort))
-  C2 <- length(unique(model_12$cohort))
-  K <- 4  # Number of intervals
-  gamma0 <- 0
-  
-  # Calculate marginal likelihoods for (1,1) and (1,2) models
-  ml_11 <- calculate_marginal_likelihood(model_11, stan_model, C1, K, gamma0)$log_marginal_likelihood
-  ml_12 <- calculate_marginal_likelihood(model_12, stan_model, C2, K, gamma0)$log_marginal_likelihood
-  
-  # Convert to posterior probabilities
-  logml_max <- max(ml_11, ml_12)
-  prob_11 <- exp(ml_11 - logml_max)
-  prob_12 <- exp(ml_12 - logml_max)
-  prob_11 / (prob_11 + prob_12)
-})
+# Apply exchangeability probability based on optimal model(s)
+for (i in optimal_indices) {
+  model_config <- models[[i]][-1]  # Exclude primary cohort (first element)
+  prior_weights <- prior_weights | (model_config == 1)  # Set to 1 if included in any optimal model
+}
+
+# Multiply by constraint to set the exchangeability probabilities to either 0 or 0.67
+prior_weights <- prior_weights * constraint
 
 
-p1 <- exchangeability_probs[1]
-p2 <- exchangeability_probs[2]
-p3 <- exchangeability_probs[3]
 
 # Calculate empirical prior for each model configuration based on p1, p2, p3
 mod_prior <- sapply(models, function(model) {
   # Determine probability for this configuration
-  prob_config <- (ifelse(model[2] == 1, p1, 1 - p1)) *
-    (ifelse(model[3] == 1, p2, 1 - p2)) *
-    (ifelse(model[4] == 1, p3, 1 - p3))
+  prob_config <- (ifelse(model[2] == 1, prior_weights[1], 1 - prior_weights[1])) *
+    (ifelse(model[3] == 1, prior_weights[2], 1 - prior_weights[2])) *
+    (ifelse(model[4] == 1, prior_weights[3], 1 - prior_weights[3]))
   prob_config
 })
-
-
 
 # Calculate posterior model weights
 max_log <- max(log_marginal_likelihoods)
