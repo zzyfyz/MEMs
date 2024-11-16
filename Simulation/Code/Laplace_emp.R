@@ -9,7 +9,7 @@ set.seed(123)
 nsim <- 500
 
 xind <- seq(50, 500, by = 50) # Assuming sample_sizes is defined and contains sample sizes
-base_dir <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Data/Equal/0.8_0.7_0.6_0.5"
+base_dir <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Data/Equal/1_0.8_0.7_0.6"
 pb <- txtProgressBar(0, nsim, style = 3)
 
 # Initialize result arrays
@@ -109,7 +109,7 @@ for (i in 1:nsim) {
       ### Prior elicitation
       cov.preds <- NULL                                # predictions of true covariate effects (NULL if no covariates)
       mu0 <- rep(0, S)    # mean vector for prior on treatment and covariate effects
-      Sig0 <- diag( 1000, S)  # covariance matrix for prior on treatment effects
+      Sig0 <- diag( 16, S)  # covariance matrix for prior on treatment effects
       
       eta0 <- matrix( 0.01, nrow = S, ncol = K )       # shape hyperparameters for prior on baseline hazards
       phi0 <- matrix( 0.01, nrow = S, ncol = K )       # rate hyperparameters for prior on baseline hazards
@@ -355,7 +355,7 @@ for (i in 1:nsim) {
         # Update dimensions of mean vector and covariance matrix hyperparameters in prior
         # distributions, and update design matrix W.l
         mu0.l <-  mu0[1:T.l]
-        Sig0.l <-  diag( 1000, T.l)
+        Sig0.l <-  diag( 16, T.l)
         W.l <- update_W_l( W.mat, mod.mat[l,] )
         
         # Calculate posterior mode of p(theta_l|D, M_l)
@@ -547,7 +547,7 @@ prob$ind <- ifelse(prob$Prob > 0.975, 1, 0)
 cred_ints <- as.data.frame.table(result_cred_ints, responseName = "CI_value", stringsAsFactors = FALSE)
 cred_ints <- reshape(cred_ints, idvar = c("simulation", "cohort", "N"), timevar = "CI", direction = "wide")
 
-output_dir <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Empirical/0.8_0.7_0.6_0.5"
+output_dir <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Empirical/1_0.8_0.7_0.6"
 write.csv(pmp, file.path(output_dir, "pmp_results.csv"), row.names = FALSE)
 write.csv(ss, file.path(output_dir, "ss_results.csv"), row.names = FALSE)
 write.csv(effm, file.path(output_dir, "effm_results.csv"), row.names = FALSE)
