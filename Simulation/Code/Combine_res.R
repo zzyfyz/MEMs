@@ -68,9 +68,9 @@ write.csv(results, file.path(file_path, "cox_null.csv"), row.names = FALSE)
 ## laplace uniform
 ##################
 
-lp_u_mu <- read.csv("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Uniform/1_0.8_0.7_0.6/effm_results.csv")
-lp_u_ci <- read.csv("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Uniform/1_0.8_0.7_0.6/cred_ints_results.csv")
-lp_u_prob<- read.csv("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Uniform/1_0.8_0.7_0.6/prob_results.csv")
+lp_u_mu <- read.csv("C:/Users/feiyi/Desktop/MEMs/effm_results.csv")
+lp_u_ci <- read.csv("C:/Users/feiyi/Desktop/MEMs/cred_ints_results.csv")
+lp_u_prob<- read.csv("C:/Users/feiyi/Desktop/MEMs/prob_results.csv")
 
 # Define the true mean for calculating bias and mse
 true_mean <- 0  # Replace with the true mean value if known
@@ -111,8 +111,8 @@ prob_1$prior <- 'Laplace-Uniform'
 # Combine all results into a final output
 final_output <- effm_1 %>%
   left_join(effci_1 %>% select(N, cover), by = "N") %>%
-  left_join(prob_1 %>% select(N, Prob), by = "N") %>%
-  select(N, Mean, bias, mse, Prob, cover)
+  left_join(prob_1 %>% select(N, prob), by = "N") %>%
+  select(N, Mean, bias, mse, prob, cover)
 
 final_output$model <- "Laplace-Uniform"
 

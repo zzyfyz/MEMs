@@ -9,7 +9,7 @@ set.seed(123)
 nsim <- 500
 
 xind <- seq(50, 500, by = 50) # Assuming sample_sizes is defined and contains sample sizes
-base_dir <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Data/Equal/1_0.8_0.7_0.6"
+base_dir <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Data/Equal/1_1_1_1"
 pb <- txtProgressBar(0, nsim, style = 3)
 
 # Initialize result arrays
@@ -547,7 +547,7 @@ prob$ind <- ifelse(prob$Prob > 0.975, 1, 0)
 cred_ints <- as.data.frame.table(result_cred_ints, responseName = "CI_value", stringsAsFactors = FALSE)
 cred_ints <- reshape(cred_ints, idvar = c("simulation", "cohort", "N"), timevar = "CI", direction = "wide")
 
-output_dir <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Empirical/1_0.8_0.7_0.6"
+output_dir <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Empirical/1_1_1_1"
 write.csv(pmp, file.path(output_dir, "pmp_results.csv"), row.names = FALSE)
 write.csv(ss, file.path(output_dir, "ss_results.csv"), row.names = FALSE)
 write.csv(effm, file.path(output_dir, "effm_results.csv"), row.names = FALSE)
