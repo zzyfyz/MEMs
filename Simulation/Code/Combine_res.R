@@ -68,9 +68,9 @@ write.csv(results, file.path(file_path, "cox_null.csv"), row.names = FALSE)
 ## laplace uniform
 ##################
 
-lp_u_mu <- read.csv("C:/Users/feiyi/Desktop/MEMs/effm_results.csv")
-lp_u_ci <- read.csv("C:/Users/feiyi/Desktop/MEMs/cred_ints_results.csv")
-lp_u_prob<- read.csv("C:/Users/feiyi/Desktop/MEMs/prob_results.csv")
+lp_u_mu <- read.csv("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Uniform/1_1_1_1/effm_results.csv")
+lp_u_ci <- read.csv("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Uniform/1_1_1_1/cred_ints_results.csv")
+lp_u_prob<- read.csv("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Uniform/1_1_1_1/prob_results.csv")
 
 # Define the true mean for calculating bias and mse
 true_mean <- 0  # Replace with the true mean value if known
@@ -117,7 +117,7 @@ final_output <- effm_1 %>%
 final_output$model <- "Laplace-Uniform"
 
 # Write to CSV
-write.csv(final_output, "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Results for Combine/laplace_uni_1_0.8_0.7_0.6.csv", row.names = FALSE)
+write.csv(final_output, "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Results for Combine/laplace_uni_1_1_1_1.csv", row.names = FALSE)
 
 ####################
 ## laplace empirical
