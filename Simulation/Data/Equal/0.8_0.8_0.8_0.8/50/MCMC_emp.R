@@ -77,8 +77,8 @@ calculate_marginal_likelihood <- function(model_data, stan_model, C, K, gamma0) 
   #probs = seq(1/K, 1, length = K)[-K] ) )
   #model_data$interval <- apply( cbind(model_data$time), 1, function(x){ sum(x > int.cuts) } )
   
-  tau_p <- c(0, 1, 4.33, 26, 52)
-  intervals <- c(0, 1, 4.33, 26, 52)
+  tau_p <- c(0, 4, 8, 12, 24)
+  intervals <- c(0, 4, 8, 12, 24)
   int.cuts <- tau_p[1:length(tau_p)-1]
   model_data$interval <- apply( cbind(model_data$time), 1, function(x){ sum(x > int.cuts) } )
   
