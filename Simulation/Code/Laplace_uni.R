@@ -109,7 +109,7 @@ for (i in 1:nsim) {
       ### Prior elicitation
       cov.preds <- NULL                                # predictions of true covariate effects (NULL if no covariates)
       mu0 <- rep(0, S)    # mean vector for prior on treatment and covariate effects
-      Sig0 <- diag( 16, S)  # covariance matrix for prior on treatment effects
+      Sig0 <- diag( 0.5, S)  # covariance matrix for prior on treatment effects
       
       eta0 <- matrix( 0.01, nrow = S, ncol = K )       # shape hyperparameters for prior on baseline hazards
       phi0 <- matrix( 0.01, nrow = S, ncol = K )       # rate hyperparameters for prior on baseline hazards
@@ -434,7 +434,7 @@ for (i in 1:nsim) {
         # Update dimensions of mean vector and covariance matrix hyperparameters in prior
         # distributions, and update design matrix W.l
         mu0.l <-  mu0[1:T.l]
-        Sig0.l <-  diag( 16, T.l)
+        Sig0.l <-  diag( 0.5, T.l)
         W.l <- update_W_l( W.mat, mod.mat[l,] )
         
         # Calculate posterior mode of p(theta_l|D, M_l)
