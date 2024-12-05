@@ -280,7 +280,7 @@ post_sample <- sapply(results, function(res) res$samples)
 
 
 # Define constraint for optimal source
-constraint <- 0.67
+constraint <- 0.1
 
 # Identify the optimal model(s) based on log marginal likelihoods
 max_logml <- max(log_marginal_likelihoods)
