@@ -46,7 +46,7 @@ parameters {
 
 model {
   // Prior for theta
-  theta[1] ~ normal(0, sqrt(0.5));
+  theta[1] ~ normal(0, 1);
 
   // Marginal likelihood using dynamically calculated phi_tilde
   for (c in 1:C) {  // For each cohort
