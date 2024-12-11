@@ -68,9 +68,9 @@ write.csv(results, file.path(file_path, "cox_null.csv"), row.names = FALSE)
 ## laplace uniform
 ##################
 
-lp_u_mu <- read.csv("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Uniform/1_1_1_1/effm_results.csv")
-lp_u_ci <- read.csv("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Uniform/1_1_1_1/cred_ints_results.csv")
-lp_u_prob<- read.csv("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Uniform/1_1_1_1/prob_results.csv")
+lp_u_mu <- read.csv("C:/Users/feiyi/Desktop/MEMs/informative/laplace_unif/1_1_1_1/effm_results.csv")
+lp_u_ci <- read.csv("C:/Users/feiyi/Desktop/MEMs/informative/laplace_unif/1_1_1_1/cred_ints_results.csv")
+lp_u_prob<- read.csv("C:/Users/feiyi/Desktop/MEMs/informative/laplace_unif/1_1_1_1/prob_results.csv")
 
 # Define the true mean for calculating bias and mse
 true_mean <- 0  # Replace with the true mean value if known
@@ -81,7 +81,7 @@ effm_1 <- lp_u_mu %>%
   filter(cohort == 1) %>%
   group_by(N) %>%
   summarize(
-    Mean = mean(Mean),
+    mean = mean(Mean),
     bias = mean(Mean - true_mean),
     mse = mean((Mean - true_mean)^2),
     .groups = "drop"
@@ -112,20 +112,20 @@ prob_1$prior <- 'Laplace-Uniform'
 final_output <- effm_1 %>%
   left_join(effci_1 %>% select(N, cover), by = "N") %>%
   left_join(prob_1 %>% select(N, prob), by = "N") %>%
-  select(N, Mean, bias, mse, prob, cover)
+  select(N, mean, bias, mse, prob, cover)
 
 final_output$model <- "Laplace-Uniform"
 
 # Write to CSV
-write.csv(final_output, "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Results for Combine/laplace_uni_1_1_1_1.csv", row.names = FALSE)
+write.csv(final_output, "C:/Users/feiyi/Desktop/MEMs/informative/laplace_unif/laplace_uni_1_1_1_1.csv", row.names = FALSE)
 
 ####################
 ## laplace empirical
 ####################
 
-lp_e_mu <- read.csv("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Empirical/1_0.8_0.7_0.6/effm_results.csv")
-lp_e_ci <- read.csv("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Empirical/1_0.8_0.7_0.6/cred_ints_results.csv")
-lp_e_prob<- read.csv("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Empirical/1_0.8_0.7_0.6/prob_results.csv")
+lp_e_mu <- read.csv("C:/Users/feiyi/Desktop/MEMs/informative/laplace_empirical/1_1_1_1/effm_results.csv")
+lp_e_ci <- read.csv("C:/Users/feiyi/Desktop/MEMs/informative/laplace_empirical/1_1_1_1/cred_ints_results.csv")
+lp_e_prob<- read.csv("C:/Users/feiyi/Desktop/MEMs/informative/laplace_empirical/1_1_1_1/prob_results.csv")
 
 # Define the true mean for calculating bias and mse
 true_mean <- 0  # Replace with the true mean value if known
@@ -136,7 +136,7 @@ effm_1 <- lp_e_mu %>%
   filter(cohort == 1) %>%
   group_by(N) %>%
   summarize(
-    Mean = mean(Mean),
+    mean = mean(Mean),
     bias = mean(Mean - true_mean),
     mse = mean((Mean - true_mean)^2),
     .groups = "drop"
@@ -166,13 +166,13 @@ prob_1$prior <- 'Laplace-Empirical'
 # Combine all results into a final output
 final_output <- effm_1 %>%
   left_join(effci_1 %>% select(N, cover), by = "N") %>%
-  left_join(prob_1 %>% select(N, Prob), by = "N") %>%
-  select(N, Mean, bias, mse, Prob, cover)
+  left_join(prob_1 %>% select(N, prob), by = "N") %>%
+  select(N, mean, bias, mse, prob, cover)
 
 final_output$model <- "Laplace-Empirical"
 
 # Write to CSV
-write.csv(final_output, "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Results for Combine/laplace_emp_1_0.8_0.7_0.6.csv", row.names = FALSE)
+write.csv(final_output, "C:/Users/feiyi/Desktop/MEMs/informative/laplace_empirical/laplace_emp_1_1_1_1.csv", row.names = FALSE)
 
 #############
 ##PLot
