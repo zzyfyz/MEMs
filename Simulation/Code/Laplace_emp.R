@@ -433,7 +433,7 @@ for (i in 1:nsim) {
         }
       }
       # Calculate posterior model probability for each model
-      constraint <- 0.67
+      constraint <- 0.1
       
       # Identify the optimal model(s) based on log marginal likelihoods
       max.log.p.D <- max(ml.prop)
@@ -547,7 +547,7 @@ prob$ind <- ifelse(prob$Prob > 0.975, 1, 0)
 cred_ints <- as.data.frame.table(result_cred_ints, responseName = "CI_value", stringsAsFactors = FALSE)
 cred_ints <- reshape(cred_ints, idvar = c("simulation", "cohort", "N"), timevar = "CI", direction = "wide")
 
-output_dir <- "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/Laplace/Empirical/1_1_1_1"
+output_dir <- "C:/Users/feiyi/Desktop/MEMs/informative/laplace_empirical/1_1_1_1"
 write.csv(pmp, file.path(output_dir, "pmp_results.csv"), row.names = FALSE)
 write.csv(ss, file.path(output_dir, "ss_results.csv"), row.names = FALSE)
 write.csv(effm, file.path(output_dir, "effm_results.csv"), row.names = FALSE)

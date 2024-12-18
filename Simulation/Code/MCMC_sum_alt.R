@@ -5,11 +5,11 @@ results <- data.frame(N=integer(), Mean=numeric(), Sd=numeric(),
                       Prob=numeric(), bias=numeric(), mse=numeric(),
                       lcl=numeric(), ucl=numeric(), model = character())
 
-te <- log(0.8) 
+te <- 0 
 
 # Loop through each sample size folder
 for (N in sample_sizes) {
-  folder_path <- paste0("C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/MCMC_emp/0.8_0.8_0.8_0.8/", N)
+  folder_path <- paste0("C:/Users/feiyi/Desktop/MEMs/normal/mcmc/1_1_1_1/", N)
   
   # Initialize storage for 500 estimates
   posterior_means <- numeric(500)
@@ -30,8 +30,8 @@ for (N in sample_sizes) {
     posterior_sds[i] <- data$Posterior_SD
     
     # Check if 0 is within the posterior interval
-    lb_coverage[i] <- data$Posterior_LB <= log(0.8)
-    ub_coverage[i] <- data$Posterior_UB >= log(0.8)
+    lb_coverage[i] <- data$Posterior_LB <= te
+    ub_coverage[i] <- data$Posterior_UB >= te
     
     diff[i] <- data$Posterior_Mean - te
     
@@ -49,9 +49,9 @@ for (N in sample_sizes) {
   
   
   # Combine results
-  results <- rbind(results, data.frame(N=N, Mean=mean_estimate, bias=bias,
-                                       mse=mse, prob = rej_rate, cover = coverage_probability, model="MCMC-Empirical"))
+  results <- rbind(results, data.frame(N=N, mean=mean_estimate, bias=bias,
+                                       mse=mse, prob = rej_rate, cover = coverage_probability, model="MCMC-Uniform"))
 }
 
 # Save the results to a CSV file
-write.csv(results, "C:/Users/feiyi/Desktop/github_MEMs/MEMs/Simulation/Results/Equal/MCMC_emp/0.8_0.8_0.8_0.8/mcmc_emp_0.8_0.8_0.8_0.8.csv", row.names=FALSE)
+write.csv(results, "C:/Users/feiyi/Desktop/MEMs/normal/combine/mcmc_uni_1_1_1_1.csv", row.names=FALSE)
